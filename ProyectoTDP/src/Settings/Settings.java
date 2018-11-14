@@ -8,8 +8,12 @@ import PreLoad.LoadWindow;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Vector;
@@ -31,6 +35,8 @@ public final class Settings {
 	private String[] ssizes;
 	private Vector2[] vsizes;
 
+	//EDICION PSS
+	private JTextField comentarios;
 
 	private Settings(){
 		wind = new JFrame("One Rebel Army -> Settings");
@@ -45,6 +51,7 @@ public final class Settings {
 		container = wind.getContentPane();
 		container.setLayout(null);
 
+		comentarios= new JTextField(20);
 
 
 		JLabel size = new JLabel("Screen Size");
@@ -107,6 +114,8 @@ public final class Settings {
 
 		difficulty = new JComboBox<>("Easy,Medium,Hard".split(","));
 
+		JButton agregarComentario= new JButton("Agregar Comentario");
+
 		full = new JCheckBox("Full Screen");
 		full.setSelected(true);
 
@@ -117,7 +126,26 @@ public final class Settings {
 		dif.setBounds(20,10,200,50);
 
 		full.setBounds(120,110,100,30);
-		ok.setBounds(120,210,100,30);
+		ok.setBounds(270,50,100,30);
+
+		comentarios.setBounds(10,150,370,50);
+		agregarComentario.setBounds(90,220,200,30);
+
+		agregarComentario.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String comentario=comentarios.getText();
+				try {
+					BufferedWriter writer=new BufferedWriter(new FileWriter("comentarios.txt",true));
+					writer.append(comentario);
+					System.out.println(comentario);
+					writer.append("\n");
+					writer.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 
 		container.add(difficulty);
 		container.add(size);
@@ -125,6 +153,8 @@ public final class Settings {
 		container.add(ok);
 		container.add(full);
 		container.add(box);
+		container.add(comentarios);
+		container.add(agregarComentario);
 		wind.repaint();
 		container.repaint();
 	}
