@@ -4,6 +4,7 @@ import ADTs.Vector2;
 import Assets.AssetStore;
 import GameData.GameSettings;
 import PreLoad.LoadWindow;
+import PreLoad.Login;
 
 import javax.swing.*;
 import java.awt.*;
@@ -173,7 +174,7 @@ public final class Settings {
 		GameSettings.difficulty = difficulty.getSelectedIndex()+1;
 		wind.setVisible(false);
 		wind.dispose();
-		new Thread(LoadWindow::getInstance).start();
+		Login.getInstance();
 	}
 
 }
