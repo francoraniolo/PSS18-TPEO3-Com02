@@ -5,6 +5,7 @@ import Engine.DoWhen;
 import Engine.GameObject;
 import ADTs.Vector2;
 import GameData.GameSettings;
+import OyentesMenuPSS.OyenteSalir;
 import Scripts.AlwaysLateral;
 import RenderingSystem.Renderizable;
 import RenderingSystem.SpriteData;
@@ -70,6 +71,26 @@ public class UI
         pausePrompt.setBounds(200,200,624,312);
         uiPanel.add(pausePrompt);
         pausePrompt.setVisible(false);
+
+         /*
+
+        Agregado por comision 2 PSS
+
+        (agregado de Salir y Reinicio del juego en el menu de Pausa)
+
+         */
+        //COMIENZO EDICION PSS
+        OyenteSalir oyenteSalir= new OyenteSalir();
+        JButton JButtonSalir= new JButton("SALIR");
+
+        JButtonSalir.addActionListener(oyenteSalir);
+
+        JButtonSalir.setBounds(300,250,100,30);
+        JButtonSalir.setVisible(true);
+
+        pausePrompt.add(JButtonSalir);
+
+        //FIN EDICION PSS
 
 
         // --------- game over --------------
