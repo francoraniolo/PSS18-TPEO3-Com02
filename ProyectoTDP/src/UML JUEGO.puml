@@ -1,0 +1,2043 @@
+@startuml
+skinparam classAttributeIconSize 0
+' Split into 4 pages
+'page 2x1
+'skinparam pageMargin 10
+'skinparam pageExternalColor gray
+'skinparam pageBorderColor black
+
+package ADTs{
+    class Vector2{
+        +{static}ORIGIN() : Vector2
+        +{static}UP() : Vector2
+        +{static}DOWN() : Vector2
+        +{static}LEFT() : Vector2
+        +{static}RIGHT() : Vector2
+        +{static}UP(length : float) : Vector2
+        +{static}DOWN(length : float) : Vector2
+        +{static}LEFT(length : float) : Vector2
+        +{static}RIGHT(length : float) : Vector2
+        - {static} Epsilon:float = 0.01f
+        - x : float
+        - y : float
+        +{static} random() : Vector2
+        +{static} random(large: float) : Vector2
+
+
+        +x():float
+        +y():float
+        +Vector2(x1,y1 : double)
+        +Vector2(x1,y1 : float)
+        +sum(other : Vector2):Vector2
+        +sub(other : Vector2):Vector2
+        +scalarProd(other : Vector2):float
+        +length():float
+        +lengthSq():float
+        +div(real:float):Vector2
+        +prod(real:float):Vector2
+        +norma():Vector2
+        +rot(angle:float):Vector2
+        +getAngle(other:Vector2):float
+        +rotateUnary(angle:float):Vector2
+        +getUnaryAngle(other:Vector2):float
+        +near(other:Vector2):boolean
+        +equals(other:Vector2):boolean ++
+        +swapped():Vector2
+        +mirrorY():Vector2
+        +mirrorX():Vector2
+        +withLength(length:float):Vector2
+        +getRight():Vector2
+        +getRight(length:float):Vector2
+        +distanceTo(other:Vector2):float
+        +half():Vector2
+        +isOver(other:Vector2):boolean
+        +isUnder(other:Vector2):boolean
+        +isLeft(other:Vector2):boolean
+        +isRight(other:Vector2):boolean
+        +v3(z:float):Vector3
+        +v3():Vector3
+        +withMaxLength(max:float):Vector2
+        +toDimension():Dimension
+        +toString():String++
+    }
+    interface IClonable<ClonableType>{
+        +clone():ClonableType
+    }
+
+    IClonable <|-- Rect
+
+    class Rect
+    {
+        -min:Vector2
+        -max:Vector2
+        +Rect(max:Vector2,min:Vector2)
+        +max():Vector2
+        +prod(factor:float):Rect
+        +clone() : Rect +
+    }
+    class RowCol
+    {
+        -row:int
+        -col:int
+        + RowCol(row:int,col:int)
+        +getCol():int
+        +getRow():int
+    }
+    class Tuple<T1,T2>{
+        -element1:T1
+        -element2:T2
+        +Tuple(element1:T1,element2:T2)
+        +{static}<TA,TB> get(TA c1, TB c2) :Tuple<TA,TB>
+        + get2():T2
+        + get1():T1
+    }
+    class Vector3{
+        - x:float
+        - y:float
+        - z:float
+        +Vector3(x,y,z : float)
+        +{static} get(x,y,z : float) : Vector3
+        + xy():Vector2
+        + z():float
+    }
+}
+
+package AIs{
+    class LookTarget{
+
+        +LookTarget(playerTransform:Transform)
+        +update()++
+    }
+    abstract class Component
+    Component <|-- LookTarget
+    LookTarget -- "1" Transform: target >
+
+    class FireFrequency{
+        - shootFrequency:final int
+        - i:int
+
+        +FireFrequency(shootFrequency:int, arsenal:Arsenal)
+        + update()++
+        + onDestroy()++
+    }
+    Component <|-- FireFrequency
+    FireFrequency -- "1" Arsenal: weapons >
+    class MouseFollower{
+        - angle:float
+
+        +MouseFollower(angle:float)
+
+        +start()++
+        + update()++
+        + onDestroy()++
+    }
+    Component <|-- MouseFollower
+    MouseFollower --"1" AbstractDirectionalInput: Dir >
+    class SimpleBullet{
+        - speed:final float
+
+        + SimpleBullet(speed: float)
+
+        + update()++
+    }
+    Component <|-- SimpleBullet
+}
+
+
+
+package Collisions{
+
+    Component <|--- HitBox
+    HitBox "transform" *-- "1" Transform
+    HitBox "entity" *-- "1" Entity
+    class HitBox{
+        - dimensions : Vector2
+        +{static} NoCheckDistance : int = 500
+        +{static} getOne(w,h : float , entity:Entity): HitBox
+        +{static} getOne(dimensions : Vector2 , entity:Entity): HitBox
+
+        -HitBox(dimensions : Vector2 , entity:Entity)
+        +getEntity():Entity
+
+        ~checkCollision(other:HitBox):CollisionData
+
+        - vertices() : [Vector2]
+        - diagonalLength() : float
+        - distToCenter(v : Vector2) : float
+        - isFar(other: Transform) : boolean
+        - vertexInside(other : HitBox): Vector2
+        - bottomLeft(): Vector2
+        - topRight(): Vector2
+        - bottomSide(): Vector2
+        - leftSide(): Vector2
+
+    }
+
+    HitBoxesLayer "hitBoxes" o--- "0..*" HitBox
+
+
+    class HitBoxesLayer{
+        ~ HitBoxesLayer()
+        + addHitBox(hitBox : HitBox)
+        + removeHitBox(hitBox : HitBox)
+        + iterator() : [HitBox]
+        + checkLayer(other:[HitBox])
+        + contains(hitBox : HitBox) : boolean
+        - condition(mine,their : HitBox) : boolean
+    }
+
+    Component <|-- HitBoxManager
+
+    HitBoxManager *-- "8" HitBoxesLayer
+
+    class HitBoxManager{
+        - {static} HitBoxManager instance;
+        + {static} HitBoxManager getInstance;
+
+        + {static} PLAYER : int = 0
+        + {static} ENEMIES : int = 1
+        + {static} PLAYERBULLET : int = 2
+        + {static} ENEMYBULLET : int = 3
+        + {static} BARRICADE_BOTH: int  =4
+        + {static} BARRICADE_ENEM: int  =5
+        + {static} REWARDS : int = 6
+        + {static} SHIELD : int = 7
+        + {static} CANT : int = 8
+
+        + update() ++
+        + addHitBox(hitBox: HitBox, layer : int)
+        + removeHitBox(hitBox: HitBox)
+
+        - toAdd : map<int, [HitBox]>
+        - toRemove : map<int, [HitBox]>
+        - connection : [Tuple<int,int>]
+        - inputData : String
+        - long i=0
+        - HitBoxesManager()
+        - checkQueues()
+        - makeACheck()
+
+    }
+
+
+    Entity "1" o-- "mine" CollisionData
+    Entity "1" o-- "their" CollisionData
+
+
+    class CollisionData{
+        - contactPoint : Vector2
+        + mine() : Entity
+        + their() : Entity
+        + contactPoint(): Vector2
+        + CollisionData(mine,their : Entity , contactPoint : Vector2)
+
+    }
+}
+
+package observer{
+    interface IBroadcaster<ParameterType>{
+        +unsuscribe(listener : Consumer<ParameterType>)
+        +suscribe(listener : Consumer<ParameterType>)
+        +clean()
+    }
+
+    IBroadcaster <|-- Broadcaster
+
+    class Broadcaster<ParameterType>{
+        -list : List<Consumer<ParameterType>>
+        -toAdd : Queue<Consumer<ParameterType>>
+        -toRemove : Queue<Consumer<ParameterType>>
+
+        Broadcaster()
+        ~ invoke(parameter ParameterType)
+        +unsuscribe(listener : Consumer<ParameterType>) +
+        +suscribe(listener : Consumer<ParameterType>) +
+        +clean() +
+    }
+
+    class Invoker<ParameterType>{
+        ~ Invoker(broad : Broadcaster<ParameterType>)
+        + invoke(p: ParameterType)
+    }
+
+    class ObserverPack<ParameterType>{
+
+    }
+
+    ObserverPack *-- "Broadcaster" IBroadcaster
+    ObserverPack *-- "Invoker" Invoker
+    Invoker  *-- " - broadcaster" Broadcaster
+
+    class ObserverSystem{
+        - {static} instance: ObserverSystem
+        + {static} getInstance: ObserverSystem
+        + <ParameterType> observerPack<ParameterType> getBroadcaster()
+    }
+}
+
+package Entities{
+
+    Entity o-- "1" GameObject: -referenced >
+    Entity -- "1" Runnable: -doOnDeath >
+    Entity o-- "1" EntityData: #data >
+    Entity -- "1" VisitorEntity: #visitor >
+
+    abstract class Entity {
+
+
+        #Entity(referenced:GameObject)
+
+
+        +observerHealth():IBroadcaster<Float>
+
+        +setOnDeath(doOnDeath:Runnable)
+
+        +onDeath()
+
+
+        +setData(data:EntityData)
+
+        +data():EntityData
+
+        +setRenderer(rend:Renderizable)
+
+        +setHitBox(hitBox:HitBox)
+
+        +addBehaviour(comp:Component)
+
+        +referenced():GameObject
+        +alive():boolean
+
+        +reportCollision( data:CollisionData)
+         {abstract} +void accept(visitor:VisitorEntity)
+
+         +setVisitor( visitor:VisitorEntity)
+    }
+
+    EntityData -- "1" IBroadcaster: -HealthData >
+    note on link: IBroadCaster<Float>
+    EntityData -- "1" Invoker: -HealthDataInvoker >
+    note on link: Invoker<Float>
+    class EntityData
+    {
+
+        -health:float
+        -damage:float
+        -shield:float
+        -initialHealth:final float
+
+        +EntityData(float health, float damage, float shield)
+
+        +getHealthObservable():IBroadcaster<Float>
+
+        +{static} WithEqualsValues( v:float):EntityData
+
+        +clone():EntityData
+
+        +getShield():float
+
+         +getDamage():float
+
+         +getHealth():float
+
+         +getInitialHealth():float
+
+         +setShield( shield:float)
+
+         +setHealth( health:float)
+
+         +setInitialHealth( initialHealth:float)
+
+         +setDamage( damage:float)
+
+         +takeDamage( damage:float)
+    }
+
+    Component <|-- EveryOne
+    EveryOne -- "1" EveryOne: -instance
+    note on link: static
+    EveryOne -left- "*" VisitorEntity: -visitors >
+    EveryOne -left- "*" Entity: -entities >
+    EveryOne -left- "*" Entity: -toAdd >
+    EveryOne -left- "*" Entity: -toDestroy >
+    class EveryOne
+    {
+        - far: float = 2000
+
+        + {static} getInstance()EveryOne
+
+        -EveryOne()
+
+        +update()++
+
+        +add( ent:Entity)
+
+        +remove(ent:Entity)
+
+        +killIn(ent:Entity, frames:int)
+
+
+        +killThemAll()
+
+        +takeLazyVisitor(visitor:VisitorEntity)
+
+        +takeVisitor(visitor:VisitorEntity )
+
+        -acceptVisitors()
+
+        -checkDestroyable(e:Entity)
+
+        +getEntities():Iterable<Entity>
+
+    }
+
+    OtherShip --|> Ship
+    class OtherShip {
+
+        +OtherShip(referenced:GameObject , weapons:Arsenal )
+
+        +accept(visitor:VisitorEntity )
+    }
+
+    PlayerBullet --|> Bullet
+    class PlayerBullet{
+        +PlayerBullet(referenced:GameObject )
+        +accept(visitor:VisitorEntity )
+    }
+
+    ShipAction --|> Consumer
+    note on link: Consumer<Vector2>
+    Ship "1" -- ShipAction
+    ShipAction -- "1" Consumer
+    note on link: Consumer<Ship>
+    class ShipAction{
+        +ShipAction(ship:Ship , shipConsumer:Consumer<Ship> )
+        +accept(vector2:Vector2)
+    }
+
+    BarricadeBoth --|> Entity
+    class BarricadeBoth{
+        + BarricadeBoth(referenced:GameObject)
+        + accept(visitor:VisitorEntity)
+    }
+
+    BarricadeEnem --|> Entity
+    class BarricadeEnem{
+        + BarricadeEnem(referenced:GameObject)
+        + accept(visitor:VisitorEntity)
+    }
+
+    Bullet --|> Entity
+    Bullet --|> IBullet
+    abstract class Bullet{
+        #Bullet(referenced:GameObject)
+        +transform():Transform
+        +entity() :Entity
+    }
+
+    EnemyBullet --|> Bullet
+    class EnemyBullet{
+        +EnemyBullet(referenced:GameObject)
+        +accept(visitor:VisitorEntity)
+    }
+
+    BarricadeBothBuilder -- "1" BarricadeBoth
+    abstract class BarricadeBothBuilder
+    {
+        + create()
+        + get():BarricadeBoth
+        +{abstract} assembleSprite()
+        +{abstract} assembleCollider()
+        +{abstract} assembleBehaviours()
+        +{abstract} assembleData()
+    }
+
+    BarricadeEnemBuilder -- "1" BarricadeBoth
+    abstract class BarricadeEnemBuilder
+    {
+        + create()
+        + get():BarricadeEnem
+        +{abstract} assembleSprite()
+        +{abstract} assembleCollider()
+        +{abstract} assembleBehaviours()
+        +{abstract} assembleData()
+    }
+
+    EnemyBulletBuilder -up|> IBulletBuilder
+    EnemyBulletBuilder -- "1" EnemyBullet
+    abstract class EnemyBulletBuilder
+    {
+        + create()+
+        + get():EnemyBullet+
+    }
+
+    PlayerBulletBuilder -up|> IBulletBuilder
+    PlayerBulletBuilder -- "1" PlayerBullet
+    abstract class PlayerBulletBuilder
+    {
+        + create()+
+        + get():PlayerBullet+
+    }
+
+    interface IBulletBuilder<BulletType extends IBullet>{
+        + create()
+        + get():BulletType
+        +{abstract} assembleSprite()
+        +{abstract} assembleHitBox()
+        +{abstract} assembleBehaviours()
+        +{abstract} assembleData()
+    }
+
+    interface IBullet
+    {
+        transform():Transform
+        entity():Entity
+    }
+
+    BulletMaker --|> EnemyBulletBuilder
+    SpriteData "1" -- BulletMaker
+    Transform "1" -- BulletMaker
+    class BulletMaker{
+        +BulletMaker(tie:Transform)
+        +assembleSprite()++
+        +assembleHitBox()++
+        +assembleBehaviours()++
+        +assembleData()++
+    }
+
+    BulletPlayerBuilder --|> PlayerBulletBuilder
+    SpriteData "1" -- BulletPlayerBuilder
+    Transform "1" -- BulletPlayerBuilder
+    class BulletPlayerBuilder{
+        +BulletPlayerBuilder(solo:Transform)
+        +assembleSprite()++
+        +assembleHitBox()++
+        +assembleBehaviours()++
+        +assembleData()++
+    }
+
+    LaserSaber --|> EnemyBulletBuilder
+    SpriteData "1" -- LaserSaber
+    Transform "2" -- LaserSaber
+    class LaserSaber{
+        +LaserSaber(tie:Transform,target:Transform)
+        +assembleSprite()++
+        +assembleHitBox()++
+        +assembleBehaviours()++
+        +assembleData()++
+    }
+
+    interface IBulletDirector<BulletType extends Ibullet, BuilderType extends IBulletBuilder<BulletType>>{
+        +setBuilder(BuilderType builder)
+        +create()
+        +assemble()
+        +get():BulletType
+    }
+
+    BulletDirector --|> IBulletDirector
+    IBulletBuilder "1" o-- BulletDirector
+    class BulletDirector<BulletType extends Ibullet, BuilderType extends IBulletBuilder<BulletType>>{
+        +setBuilder(BuilderType builder)+
+        +create()+
+        +assemble()+
+        +get():BulletType+
+    }
+
+    BarricadeEnemBuilder "1" --o BarricadeEnemDirector
+    class BarricadeEnemDirector{
+        +setBuilder(BuilderType builder)
+        +create()
+        +assemble()
+        +get():BarricadeEnem
+    }
+
+    BarricadeBothBuilder "1" --o BarricadeBothDirector
+    class BarricadeBothDirector{
+        +setBuilder(BuilderType builder)
+        +create()
+        +assemble()
+        +get():BarricadeBoth
+    }
+
+    ColdFireMaker --|> PlayerBulletBuilder
+    class ColdFireMaker{
+        + assembleSprite()+
+        + assembleHitBox()+
+        + assembleBehaviours()+
+        + assembleData()+
+        - onColdFire()+
+    }
+
+    FireShieldMaker --|> PlayerBulletBuilder
+    class FireShieldMaker{
+        + assembleSprite()+
+        + assembleHitBox()+
+        + assembleBehaviours()+
+        + assembleData()+
+    }
+
+    FireShield --|> Bullet
+    class FireShield{
+        #FireShield(referenced:GameObject)
+        +accept(visitor:VisitorEntity)+
+    }
+
+    interface IShip
+    {
+        +addWeapon(Weapon p)
+        +getPilot():Pilot
+        +setPilot(pilot:Pilot);
+    }
+
+    Ship --|> IShip
+    Ship --|> Entity
+    Ship -- "1" Pilot
+    Ship -- "1" Arsenal
+    abstract class Ship
+    {
+        #Ship(referenced:GameObject,weapons:Arsenal)
+        +onDeath()++
+        +addWeapon(Weapon p)+
+        +getPilot():Pilot+
+        +setPilot(pilot:Pilot);+
+        +getArsenal():Arsenal
+    }
+
+    BaseEnemyShip --|> Ship
+    abstract class BaseEnemyShip{
+        #BaseEnemyShip(referenced:GameObject,weapons:Arsenal)
+        +getBagPack():Arsenal
+    }
+
+    EnemyShip --|> BaseEnemyShip
+    abstract class EnemyShip{
+        +EnemyShip(referenced:GameObject)
+        +accept(visitor:VisitorEntity)+
+        +onDeath()++
+    }
+
+    EnemyShipBuilder -- "1" BaseEnemyShip
+    abstract class EnemyShipBuilder
+    {
+        create()
+        get():BaseEnemyShip
+        +{abstract} assembleSprite()
+        +{abstract} assembleHitBox()
+        +{abstract} assembleWeapons()
+        +{abstract} assembleBehaviours()
+        +{abstract} assembleData()
+
+    }
+
+    EnemyShipBuilder "1" --  EnemyShipDirector
+    class EnemyShipDirector{
+        +setBuilder(builder:EnemyShipBuilder)
+        +create()
+        +assemble()
+        +get():BaseEnemyShip
+    }
+
+    ShipBoss --|> BaseEnemyShip
+    class ShipBoss{
+        +ShipBoss(referenced:GameObject)
+        +accept(visitor:VisitorEntity)+
+        +getBagPack():Arsenal++
+        +onDeath()++
+    }
+
+    VisitorEntity <|-- ShieldVisitor
+    Entity "1"--  ShieldVisitor: reward <
+    PlayerShip "1"--  ShieldVisitor: visitable <
+    ShieldVisitor "2"--  Renderizable
+    class ShieldVisitor{
+         prevShield:float
+
+        +ShieldVisitor()
+
+        +setReward(reward:Entity)
+
+        @Override
+        +visit(visitable:PlayerShip)++
+
+        +restore()
+
+    }
+
+    DizzyMaker --|> EnemyShipBuilder
+    class DizzyMaker
+    {
+        +assembleSprite()
+        + assembleHitBox()
+        + assembleWeapons()
+        + assembleBehaviours()
+        + assembleData()
+
+    }
+
+    FastTieMaker --|> EnemyShipBuilder
+    class FastTieMaker
+    {
+        +assembleSprite()
+        + assembleHitBox()
+        + assembleWeapons()
+        + assembleBehaviours()
+        + assembleData()
+
+    }
+
+    FullKamikazeeMaker --|> EnemyShipBuilder
+    class FullKamikazeeMaker
+    {
+        +assembleSprite()
+        + assembleHitBox()
+        + assembleWeapons()
+        + assembleBehaviours()
+        + assembleData()
+
+    }
+
+    VaderAMaker --|> EnemyShipBuilder
+    class VaderAMaker
+    {
+        +assembleSprite()
+        + assembleHitBox()
+        + assembleWeapons()
+        + assembleBehaviours()
+        + assembleData()
+
+    }
+
+    VaderBMaker --|> EnemyShipBuilder
+    class VaderBMaker
+    {
+        +assembleSprite()
+        + assembleHitBox()
+        + assembleWeapons()
+        + assembleBehaviours()
+        + assembleData()
+
+    }
+
+    VaderCMaker --|> EnemyShipBuilder
+    class VaderCMaker
+    {
+        +assembleSprite()
+        + assembleHitBox()
+        + assembleWeapons()
+        + assembleBehaviours()
+        + assembleData()
+
+    }
+
+    WachinMaker --|> EnemyShipBuilder
+    class WachinMaker
+    {
+        +assembleSprite()
+        + assembleHitBox()
+        + assembleWeapons()
+        + assembleBehaviours()
+        + assembleData()
+
+    }
+
+    WhiteTieMaker --|> EnemyShipBuilder
+    class WhiteTieMaker
+    {
+        +assembleSprite()
+        + assembleHitBox()
+        + assembleWeapons()
+        + assembleBehaviours()
+        + assembleData()
+
+    }
+
+    PlayerShipMaker --|> PlayerShipBuilder
+    class PlayerShipMaker
+    {
+        +assembleSprite()
+        + assembleHitBox()
+        + assembleWeapons()
+        + assembleBehaviours()
+        + assembleData()
+
+    }
+
+
+    PlayerShipBuilder -- "1" PlayerShip
+    abstract class PlayerShipBuilder
+    {
+        create()
+        get():PlayerShip
+        +{abstract} assembleSprite()
+        +{abstract} assembleHitBox()
+        +{abstract} assembleWeapons()
+        +{abstract} assembleBehaviours()
+        +{abstract} assembleData()
+
+    }
+
+    PlayerShipBuilder -- "1" PlayerShipDirector
+    class PlayerShipDirector{
+        +setBuilder(builder:PlayerShipBuilder)
+        +create()
+        +assemble()
+        +get():PlayerShip
+    }
+
+    PlayerShip --|> Ship
+    PlayerShip -- PlayerShip:instance
+    note on link: static
+    PlayerShip -- "1" PowersDeck
+    class PlayerShip{
+        +{static}getInstance():PlayerShip
+        +{static}isUninitialized():boolean
+        +{static}initialize(GameObject go)
+        + onDeath()++
+        + accept()+
+        + setLife(cantLife:float)
+        + addSpecial(power:ISpecialPower)
+        +getBagPack():Arsenal
+    }
+
+    Component <|-- PlayerShipPerspective
+    PlayerShipPerspective -- "1" Renderizable
+    PlayerShipPerspective -- "2" AbstractContinueInput
+    class PlayerShipPerspective{
+        +PlayerShipPerspective(renderizable:Renderizable)
+        +update()+
+    }
+
+    IBulletDirector "1" -- Weapon:generator
+    abstract class Weapon<BulletDirectorType extends IBulletDirector>
+    {
+        - name:String
+        + Weapon(BulletDirectorType generator)
+        + {abstract} void Shoot();
+        + {abstract} void Destroy();
+        + isEmpty():boolean
+        + setName(String name)
+        + spriteName():String
+    }
+
+    IActivable --|> Arsenal
+    abstract class Arsenal{
+        -active:boolean=true
+        +{abstract}clone():Arsenal
+
+        +isActive():boolean+
+        +setActive(active:boolean)+
+        +{abstract}shoot()
+        +{abstract}switchCurrent()
+        +{abstract}add(w:Weapon)
+        +{abstract}remove(w:Weapon)
+        +{abstract}isEmpty():boolean
+        +{abstract}getCurrent():Weapon
+        +{abstract}destroy()
+        +{abstract}observer():IBroadCaster<Boolean>
+        +{abstract}weapons():Iterable<Weapon>
+    }
+
+     Arsenal <|-- EnemyArsenal
+     Weapon "*" -- EnemyArsenal
+     EnemyArsenal -- "1" IBroadcaster
+     EnemyArsenal -- "1" Invoker
+    class EnemyArsenal{
+        -index:int=0
+        +clone():Arsenal+
+        +isActive():boolean+
+        +setActive(active:boolean)+
+        +shoot()+
+        +switchCurrent()+
+        +add(w:Weapon)+
+        +remove(w:Weapon)+
+        +isEmpty():boolean+
+        +getCurrent():Weapon+
+        +destroy()+
+        +observer():IBroadcaster<Boolean>+
+        +weapons():Iterable<Weapon>+
+    }
+
+     Arsenal <|-- PlayerArsenal
+     Weapon "*" -- PlayerArsenal
+     PlayerArsenal -- "1" IBroadcaster
+     PlayerArsenal -- "1" Invoker
+    class PlayerArsenal{
+        +clone():Arsenal+
+        +isActive():boolean+
+        +setActive(active:boolean)+
+        +shoot()+
+        +switchCurrent()+
+        +add(w:Weapon)+
+        +remove(w:Weapon)+
+        +isEmpty():boolean+
+        +getCurrent():Weapon+
+        +destroy()+
+        +observer():IBroadcaster<Boolean>+
+        +weapons():Iterable<Weapon>+
+    }
+
+    Weapon <|-- ShotFront
+    Weapon <|-- AngularWeapon
+    Weapon <|-- GenericWeapon
+    Weapon <|-- IceWeapon
+    Weapon <|-- LateralWeapon
+
+    ShotFront -- "1" BulletDirector
+    ShotFront -- "1" Transform
+    class ShotFront<BulletDirectorType extends IBulletDirector>{
+        -phaseShift:float
+        +ShotFront(phaseShift:float,getter:BulletDirector,reference:Transform)
+        +Shoot()+
+        +Destroy()+
+    }
+
+    GenericWeapon -- "1" Transform
+    class GenericWeapon<BulletDirectorType extends IBulletDirector>{
+        -{static} framesDuration:int
+        -phaseShift:float
+        -cantShoots:int
+        +GenericWeapon(cantShoots:int,getter:BulletDirector,reference:Transform)
+        +Shoot()+
+        +Destroy()+
+        +setPhaseShift(phaseShift:float)
+    }
+
+    LateralWeapon -- "1" Transform
+    class LateralWeapon<BulletDirectorType extends IBulletDirector>{
+        -{static} framesDuration:int
+        -phaseShift:float
+        -cantShoots:int
+        +LateralWeapon(cantShoots:int,getter:BulletDirector,reference:Transform)
+        +LateralWeapon(getter:BulletDirector,reference:Transform)
+        +Shoot()+
+        +Destroy()+
+        +setPhaseShift(phaseShift:float)
+    }
+
+    AngularWeapon -- "1" Transform
+    class AngularWeapon<BulletDirectorType extends IBulletDirector>{
+        -{static} framesDuration:int
+        -tot_ang:float
+        -phaseShift:float
+        -cantShoots:int
+        +AngularWeapon(cantShoots:int,getter:BulletDirector,reference:Transform)
+        +AngularWeapon(getter:BulletDirector,reference:Transform)
+        +Shoot()+
+        +Destroy()+
+        +setPhaseShift(phaseShift:float)
+    }
+
+    class IceWeapon<BulletDirectorType extends IBulletDirector>{
+        -magazzing:int
+        +IceWeapon(getter:BulletDirector,reference:Transform)
+        +Shoot()+
+        +Destroy()+
+    }
+}
+
+
+
+package EntitiesVisitor{
+
+    class VisitorEntity{
+        +visit( playerShip: PlayerShip)
+        +visit( enemyShip: EnemyShip)
+        +visit( otherShip: OtherShip)
+        +visit( barricadeEnem: BarricadeEnem)
+        +visit( barricadeBoth: BarricadeBoth)
+        +visit( playerBullet: PlayerBullet)
+        +visit( enemyBullet: EnemyBullet)
+        +visit( fireShield: FireShield)
+        +visit( weaponReward: WeaponReward)
+        +visit( genericReward: GenericReward)
+        +visit( shipBoss: ShipBoss)
+    }
+    class BarricadeBothVisitor{
+        -transform : Transform
+        +BarricadeBothVisitor(transform:Transform)
+        -getRepulsion(repulsor,repulsado,repulsor_top,repulsado_top : Vector2)
+        - bounce(quiet,traveller : Transform)
+        +visit( playerBullet: PlayerBullet)++
+        +visit( enemyBullet: EnemyBullet)++
+    }
+
+    BossVisitor "-shipBoss" o-- "1"ShipBoss
+    class BossVisitor{
+        +visit( barricadeBoth: BarricadeBoth)++
+        +visit( playerShip: PlayerShip)++
+        -getRepulsion(repulsor,repulsado,repulsor_top,repulsado_top : Vector2)
+        +BossVisitor(shipBoss : ShipBoss)
+    }
+    class EnemiesCounter{
+        -count:int
+        EnemiesCounter()
+        +visit( enemyShip: EnemyShip)++
+        +getCount():int
+    }
+    EnemyBullet "1" --o "bullet" EnemyBulletVisitor
+    class EnemyBulletVisitor{
+        +visit( barricadeBoth: BarricadeBoth)++
+        +visit( playerShip: PlayerShip)++
+        EnemyBulletVisitor(enemyBullet : EnemyBullet)
+    }
+    EnemyShip "1" --o "ship" EnemyVisitor
+    class EnemyVisitor{
+        EnemyVisitor(ship:EnemyShip)
+        +visit( playerShip: PlayerShip)++
+        +visit( playerBullet: PlayerBullet)++
+        +visit( barricadeBoth: BarricadeBoth)++
+        -bounce(bouncePoint:Vector2)
+    }
+    EntityData "1" --o "mydata" FireShieldEffect
+    class FireShieldEffect{
+        +visit( enemyShip: EnemyShip)++
+        +visit( enemyBullet : EnemyBullet)++
+    }
+    Entity "1" --o "ent" ForceVisitor
+    class ForceVisitor{
+        +setEntity(entity : Entity)
+        +visit(playerShip : PlayerShip)++
+    }
+    Entity "1" --o "entity" PlayerBulletVisitor
+    class PlayerBulletVisitor{
+        +PlayerBulletVisitor(bullet : Entity)
+        +visit(shipBoss : ShipBoss)++
+        +visit(enemyShip : EnemyShip)++
+        +visit(ent : BarricadeBoth)++
+        +visit(ent : BarricadeEnem)++
+    }
+
+    Entity "0..*" --o "col" GetEnemiesAndBarricades
+    class GetEnemiesAndBarricades{
+        +GetEnemiesAndBarricades(col [Entity])
+        +visit(enemyShip : EnemyShip)++
+        +visit(ent : BarricadeBoth)++
+        +visit(ent : BarricadeEnem)++
+    }
+
+    EnemyShip "0..*" --o "collector" GetEnemies
+    class GetEnemies{
+        +GetEnemies(collector [EnemyShip])
+        +visit(enemyShip : EnemyShip)++
+    }
+
+    Transform "1" --o "centerPoint" FreezeVisitor
+    class FreezeVisitor{
+        -time,ratio : float
+        +FreezeVisitor(time:float, centerPoint:Transform , ratio:float)
+        +visit(enemyShip : EnemyShip)++
+        +visit(ship : ShipBoss)++
+        -precondition(ship:Entity):boolean
+        -reactive(ship:ShipBoss)
+        -reactive(ship:EnemyShip)
+    }
+
+    class PlayerVisitor{
+        +visit(enemyShip : EnemyShip)++
+        +visit(enemyBullet : EnemyBullet)++
+    }
+
+
+
+    class Pusher{
+        -ratio : float
+        -centerPoint : Vector2
+        +Pusher(ratio:float, centerPoint:Vector2)
+        +visit(enemyShip : EnemyShip)++
+        +visit(barricade : BarricadeEnem)++
+        +visit(barricade : BarricadeBoth)++
+        +visit(bullet : EnemyBullet)++
+        - effect(Entity ent)
+    }
+
+    Entity "1" --o "entity" SoloSupportVisitor
+    Ship "1" --o "ship" SoloSupportVisitor
+    class SoloSupportVisitor{
+        +visit(player:PlayerShip)++
+        +setEntity(entity:Entity)
+        -createHanSolo()
+        -getData()
+        -getBehaviour()
+        -getRenderer()
+        -getWeapons()
+    }
+
+    class WeaponSwitch{
+        -active:boolean
+        +WeaponSwitch(active:boolean)
+        +visit(playerShip:PlayerShip)++
+        +visit(enemyShip:EnemyShip)++
+    }
+
+    Weapon "1" --o "weapon" WeaponRewardVisitor
+    Entity "1" --o "related" WeaponRewardVisitor
+
+    class WeaponRewardVisitor{
+        +WeaponRewardVisitor(weapon:Weapon,entity:Entity)
+        +visit(playerShip:PlayerShip)++
+    }
+
+
+    Entity "1" --o "mine" VisitorShieldFireReward
+    FireShieldMaker "1" --o "mine" VisitorShieldFireReward
+    class VisitorShieldFireReward{
+        +VisitorShieldFireReward()
+        +setEntity(ent:Entity)
+        +visit(playerShip : PlayerShip)++
+    }
+
+    Entity "1" --o "reward" VisitorHealPotion
+    class VisitorHealPotion{
+        -potion:float = 100
+        +VisitorHealPotion()
+        +setReward(rew:Entity)
+        +visit(playerShip : PlayerShip)++
+    }
+
+    Weapon "1" --o "weapon" WeaponRewardVisitor
+    Entity "1" --o "related" WeaponRewardVisitor
+    class WeaponRewardVisitor{
+        WeaponRewardVisitor()
+        +visit(playerShip : PlayerShip)++
+    }
+
+
+    RuntimeException <|-- TimeLineException
+    class TimeLineException{
+        TimeLineException(msg:String)
+    }
+}
+
+
+package GameData{
+
+    class GameSettings{
+        + TieBulletSpeed: final float
+        + TieSpeed: final float
+        + FirstBossSpeed: final float
+        + PlayerBulletSpeed: final float
+
+        -GameSettings()
+
+        + {static} GetInstance():GameSettings
+        + bounds():Rect
+        + PlaceHolderData(): EntityData
+    }
+    GameSettings --"1" GameSettings: (static) -instance
+    GameSettings --"1" ISettingsParser: -parser >
+    GameSettings -- EntityData:PlayerInitialData >
+    GameSettings -- EntityData:PlayerData >
+    GameSettings -- EntityData:TieData >
+    GameSettings -- EntityData:TieBulletData >
+    GameSettings -- EntityData:FirstBossData >
+
+    enum EntityEnum {
+    PlayerData
+    TieData
+    TieBulletData
+    PlayerBulletData
+    FirstBossData
+    }
+
+    enum FloatEnum{
+        TieBulletSpeed
+        TieSpeed
+        FirstBossSpeed
+        PlayerBulletSpeed
+    }
+
+    class CurrentMatchData{
+        -score:int = 0
+        -CurrentMatchData()
+
+        + getMatchData: CurrentMatchData
+        + currentScore:int
+        + incScore()
+        + resetScore()
+
+    }
+    CurrentMatchData -- IBroadcaster: OnScoreChanges: IBroadcaster<Integer>
+    CurrentMatchData -- Invoker: invokerScoreChanges: Invoker<Integer>
+
+     interface ISettingsParser
+    {
+        {abstract}+getEntityData(EntityEnum ref):EntityData
+        {abstract}+getFloat(FloatEnum ref):float
+        {abstract}+FPS():int
+        {abstract}+sizeWindow():Dimension
+
+    }
+     class FileSettingsParser
+    {
+        - FPS:int
+        - floatInput: [float]
+        +getEntityData(EntityEnum ref):EntityData
+        +getFloat(FloatEnum ref):float
+        +FPS():int
+        +sizeWindow():Dimension
+    }
+    FileSettingsParser -- "1" Dimension : sizeWindow >
+    FileSettingsParser -- "*" EntityData
+    ISettingsParser <|-- FileSettingsParser
+
+
+    interface ILostOrWin {
+         {abstract}+AllianceWins()
+         {abstract}+EmpireWins()
+    }
+
+    class LostOrWin {
+         -made:boolean
+         +AllianceWins()
+         +EmpireWins()
+         -creditsAndClose()
+    }
+    ILostOrWin <|-- LostOrWin
+    class MatchResult {
+         +AllianceWins()
+         +EmpireWins()
+         +getInstance(): MatchResult
+         -creditsAndClose()
+    }
+    ILostOrWin <|-- MatchResult
+    MatchResult -- MatchResult:Instance
+    MatchResult -- "1" ILostOrWin: Deriva
+}
+
+package Engine{
+    interface IEngine{
+        +{abstract}suscribeToUpdate(object:GameObject)
+        +{abstract}suscribeToUpdate(component:Component )
+        +{abstract}waitForFrames(action:Runnable , frames:int )
+        +{abstract}start();
+        +{abstract}Pauser():CorePauser
+        +{abstract}frameCounter():long
+    }
+
+    IEngine <|-- MyEngine
+    MyEngine -- "1" Core
+    MyEngine -- "2" IBroadcaster
+    class MyEngine{
+        #MyEngine();
+        +suscribeToUpdate(object:GameObject)+
+        +suscribeToUpdate(component:Component )+
+        +waitForFrames(action:Runnable , frames:int )+
+        +start();+
+        +Pauser():CorePauser+
+        +frameCounter():long+
+    }
+
+    interface IActivable{
+        isActive:boolean
+        setActive(a:boolean)
+    }
+
+    class Clock{
+        currentTimeNanos():long
+    }
+
+    IActivable <|-- Component
+    Component -- "1" GameObject
+    abstract class Component{
+        -active:boolean=true
+        +start()
+        +update()
+        #frameCounter():long
+        +OnEnable()
+        +OnDisable()
+        +OnDestroy()
+        +DestroyComponent()
+        +DestroyComponent()
+        +transform():Transform
+        #setGameObject(ref:GameObject)
+        +gameObject():GameObject
+        +isActive:boolean+
+        +setActive(a:boolean)+
+    }
+
+    GameObject -- "1" GameObject:root
+    note left on link: static
+    GameObject -- "*"GameObject:children,parent
+    GameObject -- "*"Component
+    GameObject -- "1"Transform
+    GameObject -- "1"HitBox
+    class GameObject
+    {
+        +{static} getRoot():GameObject
+        -GameObject()
+        -GameObject(parent:GameObject)
+        +addHitBox(c:HitBox ):HitBox
+        +<S extends Component> addComponent(S c):S
+
+        +getComponents():Iterable<Component>
+        +void sendMessage( consumer:Consumer<Component>)
+
+        +<C extends Component> addChild(Iterable<C> components):GameObject
+        +addChild():GameObject
+        +removeComponent(c:Component )
+        +getParent():GameObject
+        +children():Iterable<GameObject>
+        +transform():Transform
+        +Update()
+        +destroy()
+        -onDestroy:Runnable
+        +setOnDestroy(r:Runnable )
+        +SetEnabled(enabled:boolean)
+        +getHitbox():HitBox
+        +size():int
+        +SizeComps():int
+        -renderer:Renderizable
+        +setRenderer(rend:Renderizable)
+        +getRenderer():Renderizable
+        +getChildren():Iterable<GameObject>
+    }
+
+    Component <|-- Transform
+    Transform -- "2"  Vector2: position,top
+    class Transform{
+        -ZCompontent:float
+        -lifetime:int
+
+        +Transform()
+        -Transform(position:Vector2)
+        +update()+
+        +position():Vector2
+        +position3():Vector3
+        +top():Vector2
+        +top(length:float):Vector2
+        +setPosition(position:Vector2)
+        +setTop(position:Vector2)
+        +rotate(angle:float)
+        +setFromPrototype(prototype:Transform)
+        +moveTowards(direction:Vector2)
+        +getZcomponent():float
+        +setZcomponent()
+        +getLifetime():int
+    }
+
+    Core -- "1" Core:instance
+    note on link: static
+    Core -- "4" IBroadcaster
+    Core -- "2" Invoker
+    Core -- "*" Runnable: Runnables for each frame
+    class Core{
+        -FPS:short
+        -paused:boolean
+        -currentFrame:long
+        -exit:boolean
+        -debt:long
+
+        #{static}getInstance():Core
+        -Core()
+        -clean()
+        -endOfFrame()
+        -mainLoop()
+        -sleep(time:long)
+        +Start()
+        +waitForSeconds(action:Runnable,seconds:float)
+        +waitForFrames(action:Runnable,frames:int)
+
+        +setPaused(p:boolean)
+        +isPaused():boolean
+        +frameCounter():long
+    }
+
+    KeyListener <|-- Transform
+    CorePauser -- "1" CorePauser:instance
+    note left on link: static
+    CorePauser -- "1" Core
+    class CorePauser
+    {
+        -paused = false:boolean
+        -CorePauser()
+        +{static} CorePauser Instance()
+
+        +keyTyped(e:KeyEvent )+
+        +keyPressed(e:KeyEvent ) +
+        +keyReleased(e:KeyEvent ) +
+    }
+
+    Component <|-- DoWhen
+    class DoWhen {
+        -condition:Callable<boolean>
+        -codeBlock:Runnable
+        -cond:boolean
+        +DoWhen(condition:Callable<Boolean>, Runnable action)
+        +update()+
+        -checks():Boolean
+    }
+
+    EngineGetter -- "1" EngineGetter:instance
+    note left on link: static
+    EngineGetter -- "1" IEngine
+    class EngineGetter
+    {
+        + {static}  Instance():EngineGetter
+        - EngineGetter()
+        +get():IEngine
+    }
+
+
+    Component <|-- While
+    class While
+    {
+        -condition:Callable<boolean>
+        -codeBlock:Runnable
+        -onComplete:Runnable
+        -cond:boolean
+        -runs:boolean
+
+        +While(condition:Callable<Boolean> ,codeBlock:Runnable)
+
+        +update()+
+        -checks():Boolean
+        +Excecute()
+
+        +OnComplete(onComplete:Runnable )
+    }
+
+}
+
+package GameTimeLine{
+    abstract class TimePoint{
+        + {abstract} assembleMoment()
+        + {abstract} startMoment()
+        + {abstract} complete():bool
+    }
+    TimeLine --|> Component
+    TimeLine "levels" o--- "0..*" TimePoint
+
+    class TimeLine
+    {
+        -{static}instance : TimeLine
+        +{static}getInstance() : TimeLine
+        -currentlevel:int
+        +TimeLine()
+        +update()++
+        -hasNextLevel():bool
+        +currentLevel():TimePoint
+        - runLevel()
+        + playLevel()
+    }
+
+    SomeBarricades --|> TimePoint
+
+    BarricadeBothDirector "1" --o "director" SomeBarricades
+
+    class SomeBarricades{
+        +SomeBarricades()
+        nextBarricade():Entity
+        + assembleMoment()+
+        + startMoment()+
+        + complete():bool+
+    }
+    RemoveDeathStar ---|> TimePoint
+
+    class RemoveDeathStar{
+        + assembleMoment()+
+        + startMoment()+
+        + complete():bool+
+    }
+
+    PutDeathStar ---|> TimePoint
+
+    class PutDeathStar{
+        + assembleMoment()+
+        + startMoment()+
+        + complete():bool+
+    }
+
+    TransitionToBoss ---|> TimePoint
+
+    class TransitionToBoss{
+        + assembleMoment()+
+        + startMoment()+
+        + complete():bool+
+    }
+
+
+
+    PlayerAssembler ---|> TimePoint
+
+    class PlayerAssembler{
+        + assembleMoment()+
+        + startMoment()+
+        + complete():bool+
+    }
+
+
+
+    Level ---|> TimePoint
+
+    class Level{
+    private Collection<Entity> rewards;
+        - ILevelsData parser;
+        - EnemyShipDirector director;
+        - BarricadeBothDirector directorBboth;
+        - BarricadeEnemDirector directorBenem;
+        - int number;
+        - boolean levelRunning = false;
+
+        + assembleMoment()+
+        + startMoment()+
+        + complete():bool+
+    }
+
+
+    TransitionToLevel ---|> TimePoint
+
+    class TransitionToLevel{
+        + assembleMoment()+
+        + startMoment()+
+        + complete():bool+
+    }
+
+    class GameManager{
+        -{static} instance:GameManager
+        +{static} getInstance:GameManager
+        +GameManager()
+        +StartGame()
+    }
+}
+
+package AIs{
+    interface EntityQuery
+    {
+        +{abstract}whereToMove(ent:Entity ):Vector2
+        +{abstract}whereToSee(ent:Entity ):Vector2
+    }
+
+    abstract class ParametricMove extends AIQueryDecorator{
+        - t:int
+        - lastDirection:Vector2
+
+        +ParametricMove(decorated:EntityQuery)
+
+        + whereToMove(ent:Entity ):Vector2+
+
+        + {abstract} whereToMove(Entity ent, int t):Vector2
+
+        + whereToSee(ent:Entity ):Vector2+
+
+    }
+
+    interface IDirGiver
+    {
+        +get():Vector2
+    }
+
+    AIQueryDecorator -- "1" EntityQuery
+    abstract class AIQueryDecorator implements EntityQuery
+    {
+        + AIQueryDecorator(decorated:EntityQuery )
+    }
+
+    class AbsoluteLateral  extends AIQueryDecorator
+    {
+        -  steps:int
+        -  i:int
+        -  speed:int
+        - es_primer_pasada:boolean
+        + int ran;
+        + AbsoluteLateral(d:EntityQuery,steps:int)
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+        -ran():int
+        +setRandomLevel(x:int)
+    }
+
+
+
+    class DummyEntityQuery implements EntityQuery{
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+
+    class EllipseMove extends ParametricMove {
+        -a:float
+        -b:float
+        +EllipseMove(decorated:EntityQuery , a:float , b:float )
+        +whereToMove(ent:Entity ):Vector2+
+    }
+    class FalseNTimes implements Predicate{
+        -n:int
+
+        + FalseNTimes(n:int )
+
+
+        +test(entity:Entity ):boolean +
+    }
+
+    class Hybrid50Hunter extends AIQueryDecorator {
+        +Hybrid50Hunter (handler:EntityQuery )
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+
+    class GetAndRotate implements IDirGiver
+    {
+        -turn:boolean
+        -counter=0:int
+        -max :int
+        -sp :float
+        -last:Vector2
+        -rot, frot:float
+        GetAndRotate(rot:float , first:Vector2 ,  rotex:boolean)
+        +get():Vector2
+    }
+
+
+    class IncreaseSpeedIfWatched extends AIQueryDecorator {
+        -pilot:Pilot
+        -common_speed:float
+        -degrees:float
+        +IncreaseSpeedIfWatched (decorated:EntityQuery ,p:Pilot)
+        +IncreaseSpeedIfWatched (decorated:EntityQuery ,p:Pilot,d:float)
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+
+    class Kamikazee extends AIQueryDecorator{
+        +Kamikazee(decorated:EntityQuery )
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+
+    class LateralAndDown extends AIQueryDecorator{
+        - maxDown = 90, maxLateral = 90:int
+        - down, lateral:int
+        +LateralAndDown (decorated:EntityQuery )
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+
+    class Pilot extends Component{
+        -final ship:Ship
+        -EntityQuery :handler
+        -float :Speed
+
+        +Pilot(handler:EntityQuery , ship:Ship , speed:float )
+
+        +void update()+
+        +getHandler():EntityQuery
+        +setHandler(handler:EntityQuery )
+        +speed():float
+        +setSpeed(v:float)
+        +clone():Pilot
+    }
+
+    PlayerMove -- "2" AbstractDirectionalInput
+    class PlayerMove extends AIQueryDecorator{
+        +PlayerMove(eq:EntityQuery,move:AbstractDirectionalInput,top:AbstractDirectionalInput  )
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+
+    class RelativeLateral  extends AIQueryDecorator
+    {
+        -  steps:int
+        -  i:int
+        -  speed:int
+        - es_primer_pasada:boolean
+        + int ran;
+        + RelativeLateral(d:EntityQuery,steps:int)
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+
+    class Slippery extends AIQueryDecorator{
+        -level:float
+        -tolerance:float
+        -middleDispersion:float
+        -last:Vector2
+        + Slippery(d:EntityQuery)
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+
+    SoloAI -- "*" EnemyShips
+    class SoloAI extends AIQueryDecorator {
+        -waypoints: [Vector2]
+        -max:int
+        -i:int
+        -index_waypoints:int
+        + SoloAI(d:EntityQuery,waypoints:Vector2)
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+
+        + searchSomeEnemies(cant:int )
+
+        - getTarget(ent:Entity ):Vector2
+
+        - getToMove(pos:Vector2 ):Vector2
+    }
+
+
+    class Spinner extends AIQueryDecorator {
+        -lastDirection : Vector2
+        + Spinner(d:EntityQuery,waypoints:Vector2)
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+
+    SwitchWhen -- "2" EntityQuery
+    class SwitchWhen implements EntityQuery  {
+        + SwitchWhen(pred:Predicate<Entity>,handlerFirst:EntityQuery,handlerLast:EntityQuery)
+        -check(e:Entity)
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+
+    WatchAnother -- "1" Transform
+    class WatchAnother extends AIQueryDecorator{
+        -scapeFrom:int
+        + WatchAnother (another:Transform,decorated:EntityQuery)
+        +whereToMove(ent:Entity ):Vector2+
+        +whereToSee(ent:Entity ):Vector2+
+    }
+}
+
+
+package InputManager{
+    abstract class AbstractContinueInput
+    {
+        + {abstract} happens():boolean
+        + {abstract} Destroy()
+    }
+    abstract class AbstractDirectionalInput
+    {
+        + {abstract}  Destroy()
+        + {abstract}  Direction():Vector2
+    }
+
+    IActivable <|-- AbstractDiscreteInput
+    abstract class AbstractDiscreteInput
+    {
+        + {abstract} Destroy()
+        + {abstract}  OnAction():IBroadcaster<Boolean>
+    }
+
+    ContinueClick -- "1" MouseListener
+    class ContinueClick extends AbstractContinueInput
+    {
+        - happens:boolean
+        - Listener:MouseListener
+        + ContinueClick(mouseButton:int )
+        - initialize(mouseButton:int )
+        + boolean happens()+
+        +  Destroy()+
+    }
+
+    ContinueKeyInput -- "1" KeyListener
+    class ContinueKeyInput extends AbstractContinueInput
+    {
+        - happens:boolean
+        - mychars:[char]
+        + ContinueKeyInput(chars:String )
+        + boolean happens()+
+        +  Destroy()+
+    }
+
+    DirectionalMouse -- "1" Transform
+    class DirectionalMouse extends AbstractDirectionalInput
+    {
+        + DirectionalMouse (reference:Transform)
+        +  Destroy()+
+        + Direction():Vector2+
+    }
+
+    DirectionalWASD-- "4" AbstractContinueInput
+    class DirectionalWASD extends AbstractDirectionalInput
+    {
+        -Xblocked:boolean
+        -Yblocked:boolean
+        + DirectionalWASD ()
+        + lockX()
+        + lockY()
+        + unLockX()
+        + unLockY()
+        +  Destroy()+
+        + Direction():Vector2+
+    }
+
+    DiscreteClick --  IBroadcaster
+    DiscreteClick --  Invoker
+    DiscreteClick -- AbstractContinueInput
+    DiscreteClick -- DummyComponent
+    class DiscreteClick extends AbstractDiscreteInput
+    {
+        -lastStatus:boolean
+        +DiscreteClick(mouseClick:int )
+        +  initialize(mouseClick:int )
+        -  Update()
+        + isActive():boolean+
+        +  setActive(active:boolean )+
+        +  Destroy()+
+        +  OnAction():IBroadcaster<Boolean>+
+    }
+
+    DiscreteKeyInput --  IBroadcaster
+    DiscreteKeyInput --  Invoker
+    DiscreteKeyInput -- AbstractContinueInput
+    DiscreteKeyInput -- DummyComponent
+    class DiscreteKeyInput extends AbstractDiscreteInput
+    {
+        -lastStatus:boolean
+        +DiscreteKeyInput(chars:String)
+        -  Update()
+        + isActive():boolean+
+        +  setActive(active:boolean )+
+        +  Destroy()+
+        +  OnAction():IBroadcaster<Boolean>+
+    }
+
+    class DummyComponent extends Component
+    {
+        - Runnable onUpdate;
+        DummyComponent(onUpdate:Runnable )
+        + update()++
+        + OnDestroy() ++
+    }
+}
+
+package Misc{
+    class DeathStar{
+        +{static} get():GameObject
+        -{static} instance : GameObject
+    }
+}
+
+package Rewards{
+    interface Consumer<T>{
+        +void accept(t : T)
+    }
+    Consumer <|---- FireSpinnerCoin
+    class FireSpinnerCoin{
+        +void accept(transform :Transform)+
+    }
+
+    Consumer <|--- GenericReward
+    Renderizable "1" -o "renderer" GenericReward
+    Entity <|-- GenericReward
+    class GenericReward{
+
+        +GenericReward(referenced : GameObject,visitor:  VisitorEntity,sprite: SpriteData )
+        +accept(visitor : visitorEntity)+
+
+    }
+    Consumer <|-- HealthCoin
+    class HealthCoin{
+
+        +accept(transform Transform)+
+
+    }
+
+    Consumer <|-- IceWeaponCoin
+    class IceWeaponCoin{
+
+        +accept(transform Transform)+
+
+    }
+
+    class RewardKey{
+        -{static} x:int =0
+        - ID : int
+        - RewardKey()
+        + {static} get() : RewardKey
+        + hashCode() : int ++
+        + equals(obj : Object) : boolean ++
+        + toString() : String ++
+    }
+
+    Component <|--- RewardMove
+    class RewardMove{
+        -min,max : int
+        -counter : float =1
+        -speed : Vector2 = (-1,0)
+        +RewardMove()
+        + update()++
+    }
+
+
+    RewardKey "7" ---o "+KEYS" RewardsManager
+
+
+    class RewardsManager{
+        -{static} instance : RewardsManager
+        +{static} getInstance : RewardsManager
+        - creators Map<RewardKey,Consumer<Transform>>
+        - RewardsManager()
+        + getReward(key:RewardKey, point : Transform)
+
+    }
+
+    Consumer <|-- ShieldCoin
+    class ShieldCoin{
+        +accept(transform:Transform)++
+    }
+
+    Consumer <|-- WeaponFiveCoin
+
+    class WeaponFiveCoin{
+        +accept(transform:Transform)++
+    }
+
+    Entity <|-- WeaponReward
+    Weapon "1" --o "-weapon" WeaponReward
+    Renderizable "1" --o "-renderer" WeaponReward
+
+    class WeaponReward{
+        +WeaponReward(referenced:GameObject,sprite:SpriteData)
+        +setWeapon(w:Weapon)
+        +accept(visitor : VisitorEntity)+
+    }
+
+
+}
+
+package Scripts{
+
+    Component <|-- Jumper
+    Transform "1" --o "-transform" Jumper
+    IBroadcaster "1" --o "onComplete" Jumper
+    Invoker "1" --o "invokeComplete" Jumper
+
+    class Jumper{
+        -delay:int
+        -points: [Vector2]
+        -firstPos : Vector2
+
+        +Jumper(path : [Vector2] , transform : Transform)
+        +update()++
+        +getOnComplete():IBroadcaster<Vector2>
+
+    }
+
+    GameObject ----o "obj" HyperSpace
+    HyperSpace -|>Component
+    class HyperSpace{
+        +{static} Jump():Jumper
+        -{static} checkObj()
+        -{static} getPath(src,dest : vector2, frames:int):[vector2]
+    }
+    Directionable -|>Component
+    class Directionable{
+        -direction : Vector2
+        +Directionable(d:Vector2)
+        +update()++
+    }
+    DangerousHunter <|--- Component
+    DangerousHunter "tofollow" o-- Transform
+    class DangerousHunter{
+        -increment,maxspeed,currentspeed : float
+        +update()++
+        DangerousHunter(tofollow:Transform)
+    }
+    AlwaysTurnAround "centerPoint" o--- Transform
+    AlwaysTurnAround ----|> Component
+    class AlwaysTurnAround{
+        -currentGap : Vector2
+        -angularSpeed : float
+        +update()++
+        AlwaysTurnAround()
+    }
+
+    class AlwaysRotate{
+        -rot:float
+        AlwaysRotate(v:float)
+        +update()++
+    }
+    PushData "target" o-- Transform
+    class PushData{
+        -counter:int
+        -veloci:Vector2
+        -dismish:float
+        +getVelocity():Vector2
+        +getCounter():int
+        +getDismish():float
+        +setVelocity(velocity:Vector2)
+        +setDismish(dismish:float)
+        +getTarget():Transform
+    }
+
+    class RewardLateralMovement{
+        - t:float
+        - rand_inc,dir :int
+        + RewardLateralMovement(seed:int)
+        +update()++
+    }
+
+    ThePusher "tasks,toRemove" o-- "0..*" PushData
+    ThePusher "1"--*"instance" ThePusher
+
+    class ThePusher{
+        ThePusher()
+        add(target:Transform , c:int, vel:Vector2, x:float)
+        +update()++
+    }
+
+
+
+}
+
+
+package SpecialPowers{
+    interface ISpecialPower
+    {
+        +aply()
+    }
+    PowerDeck --|> IAcvtivable
+    PowerDeck "powers" o-- "0.." ISpecialPower
+    class PowerDeck{
+        -active:boolean
+        +PowerDeck(key:AbstractDiscreteInput)
+        +add(pow:ISpecialPower)
+        -use(b:boolean)
+        +isActive():boolean +
+        +setActive(act:boolean) +
+    }
+    TheForcePower ----|> ISpecialPower
+    class TheForcePower{
+        aply()+
+    }
+}
+
+package Tools{
+    CompEntry --|> Comparable
+    class CompEntry<K,V>
+    {
+        -key:K
+        -value:V
+        CompEntry(k:K , v:V)
+        value():V
+        key():K
+        compareTo(o:CompEntry):int
+    }
+    AnimatorsVolatiles "parent" o-- GameObject
+    class AnimatorsVolatiles
+    {
+        -{static}inst:AnimatorsVolatiles
+        +{static}getInst:AnimatorsVolatiles
+        -options : [String]
+        AnimatorsVolatiles()
+        getVolatile(pos:Vector2, name:String):Tranform
+        getExplo(pos:Vector2):Tranform
+    }
+
+    class Random{
+        +{static}value() : float
+        +{static}value(min:int,max:int) : float
+
+    }
+
+    class Tools {
+        +{static} random(array:[X]):X
+        +{static} contains(array:[X], elem:X):boolean
+    }
+}
+
+
+
+
+
+@enduml

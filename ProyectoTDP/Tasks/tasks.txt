@@ -1,0 +1,9 @@
+Enemigos:
+
+	tipo 5 
+
+		cazar al jugador hasta tener 50% de vida, luego
+		empezar a moverse aleatorio
+
+
+

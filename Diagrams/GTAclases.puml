@@ -1,0 +1,87 @@
+@startuml
+
+class Auto{
+    #marca : String
+    #color : String
+    #patente : String
+    #precio : int
+    #capacidad : int
+    ==Constructor==
+    +Auto(marca:String,color:String,patente:String,precio:int, capaciad:int)
+    +Auto(color:String,patente:String,capaciad:int)
+    ==
+    +getCapacidad() : int
+    +getPatente() : int
+    +getPrecio() : String
+    +getMarca() : String
+    +getCapital(estaDenunciado: boolean):float
+    +cumpleEspecifiaciones(marca:String,color:String,capacidad:int):boolean
+}
+
+class Inmueble{
+    #enVenta : boolean
+    #precio : int
+    #cantidadMaximaAutos: int
+    ==Constructor==
+    +Inmueble(cantidadMaximaAutos:int,precio:int)
+    ==
+    +getPrecio():int
+    +getEnVenta():boolean
+    +getCapital():float
+    +getAutos():Collection<Auto>
+    +guardarAuto(auto:Auto):void
+}
+
+class Tommy{
+    #Dinero:int
+    +CalcularCapital():float
+    +puedePagar(precio:int):boolean
+    +comprar(auto:Auto):void
+    +buscarInmueble():void
+    +getDinero():int
+    +CalcularCapitalTotal():float
+    +hayGarageLibre():boolean
+}
+
+class Carl{
+    +encontrarAuto(marca:String,color:String,capaciad:int):Auto
+    +encontrarAuto():Auto
+    -armarEspecial():Auto
+}
+
+class Handy{
+    +estaRobado(Patente:String):boolean
+}
+
+class Ciudad{
+    +getInmuebles():Collection<Inmueble>
+    +getAutos():Collection<Auto>
+    +agregarAuto(auto:Auto):void
+}
+
+class CiudadTommy{
+    +getInmuebles():Collection<Inmueble>
+}
+
+class CiudadCarl{
+    +getAutos():Collection<Auto>
+    +agregarAuto(auto:Auto):void
+}
+
+Ciudad --o "*" Inmueble :-Inmuebles
+Ciudad --o "*" Auto :-Autos
+
+CiudadTommy --* Ciudad: -Ciudad
+CiudadCarl --* Ciudad: -Ciudad
+
+Inmueble --o "*" Auto :-AutosGarage
+
+Tommy --> Handy : -handy
+Tommy --> Carl  : -carl
+Tommy --> CiudadTommy  : -ciudad
+Tommy --o "*" Inmueble : -inmuebles
+
+Carl --> Tommy  : -tommy
+Carl --> CiudadCarl  : -ciudad
+
+@enduml

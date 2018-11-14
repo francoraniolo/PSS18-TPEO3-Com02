@@ -1,0 +1,27 @@
+@startuml
+
+
+VisitorEntity <|----- BarricadeBothVisitor
+VisitorEntity <|---- BarricadeEnemVisitor
+VisitorEntity <|--- BossVisitor
+VisitorEntity <|-- EnemiesCounter
+VisitorEntity <|--- EnemyBulletVisitor
+VisitorEntity <|---- EnemyVisitor
+VisitorEntity <|--- FireShieldEffect
+VisitorEntity <|--- ForceVisitor
+VisitorEntity <|-- FreezeVisitor
+VisitorEntity <|-- GetEnemies
+VisitorEntity <|-- GetEnemiesAndBarricades
+VisitorEntity <|----- PlayerBulletVisitor
+VisitorEntity <|---- Pusher
+VisitorEntity <|-- PlayerVisitor
+VisitorEntity <|--- SoloSupportVisitor
+VisitorEntity <|---- VisitorHealPotion
+VisitorEntity <|-- VisitorShieldFireReward
+VisitorEntity <|--- WeaponRewardVisitor
+VisitorEntity <|----- WeaponSwitch
+
+
+
+
+@enduml
