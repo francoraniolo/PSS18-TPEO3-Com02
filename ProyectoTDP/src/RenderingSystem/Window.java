@@ -208,4 +208,9 @@ public class Window extends Component
     public void Close(){
         System.exit(0);
     }
+
+    public void Dispose(){
+        wind.dispose();
+
+    }
 }

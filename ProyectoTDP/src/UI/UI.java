@@ -5,6 +5,7 @@ import Engine.DoWhen;
 import Engine.GameObject;
 import ADTs.Vector2;
 import GameData.GameSettings;
+import OyentesMenuPSS.OyenteReiniciar;
 import OyentesMenuPSS.OyenteSalir;
 import Scripts.AlwaysLateral;
 import RenderingSystem.Renderizable;
@@ -68,7 +69,8 @@ public class UI
 
         // ------------ pause prompt -------------
         pausePrompt = new JLabel(AssetStore.getIcon("wooky"));
-        pausePrompt.setBounds(200,200,624,312);
+        //pausePrompt.setBounds(200,200,624,312);
+        pausePrompt.setBounds(200,100,800,600);
         uiPanel.add(pausePrompt);
         pausePrompt.setVisible(false);
 
@@ -81,14 +83,27 @@ public class UI
          */
         //COMIENZO EDICION PSS
         OyenteSalir oyenteSalir= new OyenteSalir();
-        JButton JButtonSalir= new JButton("SALIR");
+        JButton JButtonSalir= new JButton("Exit Game");
 
         JButtonSalir.addActionListener(oyenteSalir);
 
-        JButtonSalir.setBounds(300,250,100,30);
+        JButtonSalir.setBounds(550,450,200,30);
         JButtonSalir.setVisible(true);
 
+        OyenteReiniciar oyentereiniciar= new OyenteReiniciar();
+        JButton JButtonReiniciar= new JButton("Restart Game");
+
+        JButtonReiniciar.addActionListener(oyentereiniciar);
+
+        JButtonReiniciar.setBounds(300,450,200,30);
+        JButtonReiniciar.setVisible(true);
+
         pausePrompt.add(JButtonSalir);
+        pausePrompt.add(JButtonReiniciar);
+
+
+
+
 
         //FIN EDICION PSS
 
