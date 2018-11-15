@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="93369d2c-ad3d-4145-8b56-e53779016800" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/ProyectoTDP/src/PreLoad/Login.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProyectoTDP/src/PreLoad/Login.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProyectoTDP/src/Settings/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProyectoTDP/src/Settings/Settings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comentarios.txt" beforeDir="false" afterPath="$PROJECT_DIR$/comentarios.txt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,12 +25,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="64" />
+          <entry key="java" value="325" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="64" />
+          <entry key="JAVA" value="325" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.lifecycle.project">
@@ -46,20 +44,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ProyectoTDP/src/Settings/Settings.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="144" column="113" selection-start-line="144" selection-start-column="113" selection-end-line="144" selection-end-column="113" />
+            <state relative-caret-position="-46">
+              <caret line="150" lean-forward="true" selection-start-line="150" selection-end-line="150" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ProyectoTDP/src/PreLoad/Login.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1292">
-              <caret line="81" selection-start-line="81" selection-end-line="81" selection-end-column="22" />
+            <state relative-caret-position="229">
+              <caret line="58" column="35" selection-start-line="58" selection-start-column="35" selection-end-line="58" selection-end-column="35" />
             </state>
           </provider>
         </entry>
@@ -117,8 +115,8 @@
         <option value="$PROJECT_DIR$/ProyectoTDP/src/GameData/GameSettings.java" />
         <option value="$PROJECT_DIR$/ProyectoTDP/src/GameTimeLine/TimeLine.java" />
         <option value="$PROJECT_DIR$/ProyectoTDP/src/OyentesMenuPSS/OyenteReiniciar.java" />
-        <option value="$PROJECT_DIR$/ProyectoTDP/src/PreLoad/Login.java" />
         <option value="$PROJECT_DIR$/ProyectoTDP/src/Settings/Settings.java" />
+        <option value="$PROJECT_DIR$/ProyectoTDP/src/PreLoad/Login.java" />
       </list>
     </option>
   </component>
@@ -211,7 +209,7 @@
     <property name="SearchEverywhereHistoryKey" value="level 1&#9;PSI&#9;JAVA://GameTimeLine.TransitionToLevel&#10;getInstance&#9;PSI&#9;JAVA://RenderingSystem.Window#GetInstance&#10;getin&#9;PSI&#9;JAVA://Observer.ObserverSystem#getInstance&#10;getIns&#9;PSI&#9;JAVA://Observer.ObserverSystem#getInstance&#10;getI&#9;PSI&#9;JAVA://GameTimeLine.GameManager#getInstance&#10;Instance&#9;PSI&#9;JAVA://Engine.CorePauser#Instance" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1542240820264" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1542243874679" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
@@ -280,12 +278,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1542164897609</updated>
-      <workItem from="1542242558854" duration="273000" />
+      <workItem from="1542242558854" duration="1297000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="739000" />
+    <option name="totallyTimeSpent" value="1763000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -301,7 +299,7 @@
       <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32786885" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32786885" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -649,15 +647,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ProyectoTDP/src/Settings/Settings.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="144" column="113" selection-start-line="144" selection-start-column="113" selection-end-line="144" selection-end-column="113" />
+        <state relative-caret-position="-46">
+          <caret line="150" lean-forward="true" selection-start-line="150" selection-end-line="150" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ProyectoTDP/src/PreLoad/Login.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1292">
-          <caret line="81" selection-start-line="81" selection-end-line="81" selection-end-column="22" />
+        <state relative-caret-position="229">
+          <caret line="58" column="35" selection-start-line="58" selection-start-column="35" selection-end-line="58" selection-end-column="35" />
         </state>
       </provider>
     </entry>

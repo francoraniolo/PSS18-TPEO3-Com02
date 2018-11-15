@@ -48,9 +48,15 @@ public class Login {
         loginButton.setBounds(10, 80, 80, 25);
         frame.add(loginButton);
 
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setBounds(10, 80, 80, 25);
+        frame.add(logoutButton);
+        logoutButton.setVisible(false);
+
         JButton PlayButton = new JButton("Play");
         PlayButton.setBounds(180, 80, 80, 25);
         frame.add(PlayButton);
+        PlayButton.setVisible(false);
 
         loginButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
@@ -76,6 +82,14 @@ public class Login {
                     else {
                         logged = true;
                         loginButton.setVisible(false);
+                        logoutButton.setVisible(true);
+                        userText.setText("");
+                        passwordText.setText("");
+                        userText.setVisible(false);
+                        passwordText.setVisible(false);
+                        userLabel.setVisible(false);
+                        passwordLabel.setVisible(false);
+                        PlayButton.setVisible(true);
                         if (admin)
                         JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de loguearse como Admin", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                         else
@@ -93,6 +107,22 @@ public class Login {
                 frame.dispose();
                 new Thread(LoadWindow::getInstance).start();
             }});
+
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                logged = false;
+                admin = false;
+                logoutButton.setVisible(false);
+                loginButton.setVisible(true);
+                userText.setVisible(true);
+                passwordText.setVisible(true);
+                userLabel.setVisible(true);
+                passwordLabel.setVisible(true);
+                PlayButton.setVisible(false);
+                JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de desloguearse", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
 
         }
     }
