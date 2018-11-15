@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import javax.swing.*;
 
@@ -58,6 +59,12 @@ public class Login {
         frame.add(PlayButton);
         PlayButton.setVisible(false);
 
+        JButton comentariosButton = new JButton("Comentarios");
+        comentariosButton.setBounds(70, 30, 150, 40);
+        frame.add(comentariosButton);
+        comentariosButton.setVisible(false);
+
+
         loginButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
                 String thisLine = null;
@@ -90,8 +97,10 @@ public class Login {
                         userLabel.setVisible(false);
                         passwordLabel.setVisible(false);
                         PlayButton.setVisible(true);
-                        if (admin)
-                        JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de loguearse como Admin", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        if (admin) {
+                            comentariosButton.setVisible(true);
+                            JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de loguearse como Admin", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        }
                         else
                         JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de logearse como usuario regular", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     }
@@ -108,6 +117,30 @@ public class Login {
                 new Thread(LoadWindow::getInstance).start();
             }});
 
+        comentariosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String thisLine = null;
+                BufferedReader br = null;
+                try {
+                    br = new BufferedReader(new FileReader("comentarios.txt"));
+                    String comentarios = "";
+                    while ((thisLine = br.readLine()) != null){
+                        comentarios += thisLine;
+                        comentarios += "\n";
+                    }
+                    JOptionPane.showMessageDialog(new JFrame(), comentarios, "Comentarios", JOptionPane.INFORMATION_MESSAGE);
+
+                }
+                catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+                catch (java.io.IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -120,7 +153,8 @@ public class Login {
                 userLabel.setVisible(true);
                 passwordLabel.setVisible(true);
                 PlayButton.setVisible(false);
-                JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de desloguearse", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                comentariosButton.setVisible(false);
+                JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de desloguearse", "Logout", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 

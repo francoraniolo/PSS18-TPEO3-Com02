@@ -142,6 +142,7 @@ public final class Settings {
 					System.out.println(comentario);
 					writer.append("\n");
 					writer.close();
+					comentarios.setText("");
 					JOptionPane.showMessageDialog(new JFrame(), "Su comentario ha sido registrado. Muchas gracias", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 				} catch (IOException e1) {
 					e1.printStackTrace();
