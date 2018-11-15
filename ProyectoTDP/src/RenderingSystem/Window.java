@@ -81,6 +81,8 @@ public class Window extends Component
 
         ui = UI.getInstance();
         var panelUI = ui.getUIPanel();
+
+
         panelUI.setBounds(0,0,0,0);
         panelUI.setSize(settings.sizeWindow);
         container.add(panelUI);
@@ -200,5 +202,15 @@ public class Window extends Component
 
     public boolean InFocus() {
         return wind.hasFocus();
+    }
+
+    //EDICION PSS
+    public void Close(){
+        System.exit(0);
+    }
+
+    public void Dispose(){
+        wind.dispose();
+
     }
 }

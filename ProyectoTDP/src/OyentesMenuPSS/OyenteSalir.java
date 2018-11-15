@@ -1,0 +1,1 @@
+package OyentesMenuPSS;import java.awt.event.ActionEvent;import java.awt.event.ActionListener;import RenderingSystem.Window;public class OyenteSalir implements ActionListener {    @Override    public void actionPerformed(ActionEvent e) {        Window window = Window.GetInstance();        window.Close();    }}

@@ -1,0 +1,14 @@
+diff a/.idea/workspace.xml b/.idea/workspace.xml	(rejected hunks)
+@@ -2,11 +2,7 @@
+ <project version="4">
+   <component name="ChangeListManager">
+     <list default="true" id="93369d2c-ad3d-4145-8b56-e53779016800" name="Default" comment="">
+-      <change afterPath="$PROJECT_DIR$/ProyectoTDP/src/OyentesMenuPSS/OyenteReiniciar.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/ProyectoTDP/src/GameTimeLine/TimeLine.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProyectoTDP/src/GameTimeLine/TimeLine.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/ProyectoTDP/src/RenderingSystem/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProyectoTDP/src/RenderingSystem/Window.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/ProyectoTDP/src/UI/UI.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProyectoTDP/src/UI/UI.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/ProyectoTDP/src/Settings/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProyectoTDP/src/Settings/Settings.java" afterDir="false" />
+     </list>
+     <ignored path="$PROJECT_DIR$/out/" />
+     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
