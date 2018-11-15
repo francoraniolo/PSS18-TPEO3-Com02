@@ -77,9 +77,9 @@ public class Login {
                         logged = true;
                         loginButton.setVisible(false);
                         if (admin)
-                        JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de loguearse como Admin", "Datos Erróneos", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de loguearse como Admin", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                         else
-                        JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de logearse como usuario regular", "Datos Erróneos", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(new JFrame(), "Usted acaba de logearse como usuario regular", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     }
 
                 } catch(Exception ex) {
